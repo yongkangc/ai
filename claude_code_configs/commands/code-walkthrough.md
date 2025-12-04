@@ -136,6 +136,33 @@ Use Unicode box-drawing characters for clean, professional diagrams:
   └────────────────┘      └────────────────┘
 ```
 
+### Summary Pseudocode Table
+```
+  ┌────┬─────────────────────────────────────────────────────────────────────────┐
+  │  # │ Action                                                                  │
+  ├────┼─────────────────────────────────────────────────────────────────────────┤
+  │  1 │ Pop old branches we've moved past                                       │
+  │  2 │ Set lower_bound to current leaf cursor position                         │
+  │  3 │ LOOP:                                                                   │
+  │  4 │   Get next cached branch (from stack or cursor)                         │
+  │    │   - If none left → RETURN open range or None                            │
+  │    │   - If cursor behind → seek forward, retry                              │
+  │    │   - If cursor ahead → maybe return catch-up range                       │
+  │  5 │   Push branch to branch_stack if needed                                 │
+  │  6 │   Find next unprocessed child (XOR masks)                               │
+  │    │   - If all done → pop branch, continue loop                             │
+  │  7 │   If child has cached hash AND not needed for proof:                    │
+  │    │   - USE CACHED HASH, skip child, continue loop                          │
+  │  8 │   If nested cached branch exists below child:                           │
+  │    │   - Push it, continue loop to process it                                │
+  │  9 │   No cache available → RETURN range to calculate from leaves            │
+  │    │ END LOOP                                                                │
+  └────┴─────────────────────────────────────────────────────────────────────────┘
+
+  Use this format to summarize complex algorithms with numbered steps,
+  showing the main flow, branches, and exit conditions clearly.
+```
+
 ## Output Format
 
 Structure your walkthrough as:
