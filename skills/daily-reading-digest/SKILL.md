@@ -38,7 +38,10 @@ If state is corrupted or stale, remove it and rerun.
    - Keep the title and URL.
    - Use the feed excerpt directly if it is clear.
    - If excerpt is weak, fetch the URL and write a better one-line summary.
-3. Format HN top stories from `hn_top[]` as tight one-liners (`title + why it matters`).
+3. Format HN top stories from `hn_top[]` — each entry MUST:
+   - Use inline Markdown links: `[title](url)` so the title IS the link
+   - Add a short "why it matters" phrase after the link
+   - Example: `1. [Some Cool Project](https://example.com/cool) — why this matters`
 4. Keep tone factual and compact.
 5. Send one Telegram message only (no markdown tables).
 
@@ -53,8 +56,8 @@ Use this exact high-level structure:
 
 ## Length and quality constraints
 
-- Target 900-1800 characters total.
-- Always include URLs for new posts and HN stories.
+- Target 1200-2500 characters total (longer is fine to fit all 10 HN links).
+- **All links must be inline Markdown**: `[title](url)` — never bare URLs on separate lines.
 - If there are no new tracked posts, explicitly say: `No new posts from tracked writers today.`
 - Never invent article content. If unsure, mark as `title-only summary`.
 
