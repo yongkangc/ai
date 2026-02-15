@@ -12,22 +12,43 @@ from typing import Any
 
 def extract_video_id(url: str) -> str | None:
     """Extract YouTube video ID from various URL formats."""
+    # Use [a-zA-Z0-9_-]{11} to match exactly an 11-char video ID
+    # instead of greedy [^&\n?#]+ which can capture trailing path segments.
+    _ID = r"([a-zA-Z0-9_-]{11})"
     patterns = [
-        r"(?:https?://)?(?:www\.)?youtube\.com/watch\?.*v=([^&\n?#]+)",
-        r"(?:https?://)?(?:www\.)?youtube\.com/embed/([^&\n?#]+)",
-        r"(?:https?://)?(?:www\.)?youtube\.com/v/([^&\n?#]+)",
-        r"(?:https?://)?(?:www\.)?youtube\.com/shorts/([^&\n?#]+)",
-        r"(?:https?://)?(?:www\.)?youtube\.com/live/([^&\n?#]+)",
-        r"(?:https?://)?youtu\.be/([^&\n?#]+)",
+        rf"(?:https?://)?(?:www\.)?youtube\.com/watch\?.*v={_ID}",
+        rf"(?:https?://)?(?:www\.)?youtube\.com/embed/{_ID}",
+        rf"(?:https?://)?(?:www\.)?youtube\.com/v/{_ID}",
+        rf"(?:https?://)?(?:www\.)?youtube\.com/shorts/{_ID}",
+        rf"(?:https?://)?(?:www\.)?youtube\.com/live/{_ID}",
+        rf"(?:https?://)?youtu\.be/{_ID}",
     ]
     for pattern in patterns:
         match = re.search(pattern, url)
         if match:
-            return match.group(1).rstrip("/")
-    # Maybe it's just a video ID
-    if re.match(r"^[a-zA-Z0-9_-]{11}$", url.rstrip("/")):
-        return url.rstrip("/")
+            return match.group(1)
+    # Maybe it's just a bare video ID
+    stripped = url.strip().rstrip("/")
+    if re.match(r"^[a-zA-Z0-9_-]{11}$", stripped):
+        return stripped
     return None
+
+
+def fetch_video_title(video_id: str) -> str | None:
+    """Fetch video title via YouTube oEmbed (no API key needed)."""
+    import urllib.request
+
+    url = (
+        f"https://www.youtube.com/oembed"
+        f"?url=https://www.youtube.com/watch?v={video_id}&format=json"
+    )
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data.get("title")
+    except Exception:
+        return None
 
 
 def format_timestamp(seconds: float) -> str:
@@ -82,8 +103,13 @@ def fetch_transcript(
             "total_duration_secs": round(total_duration),
             "segments": segments,
         }
-    except Exception as exc:
+    except KeyboardInterrupt:
+        raise
+    except (OSError, ValueError, RuntimeError) as exc:
         return {"success": False, "error": str(exc)}
+    except Exception as exc:
+        # Catch API-specific exceptions we can't import ahead of time
+        return {"success": False, "error": f"{type(exc).__name__}: {exc}"}
 
 
 def main() -> None:
@@ -116,10 +142,13 @@ def main() -> None:
         print(f"Error: {result['error']}", file=sys.stderr)
         sys.exit(1)
 
+    title = fetch_video_title(video_id)
+
     if args.output_json:
         output = {
             "video_id": result["video_id"],
             "video_url": f"https://www.youtube.com/watch?v={result['video_id']}",
+            "title": title,
             "total_segments": result["total_segments"],
             "total_duration": format_timestamp(result["total_duration_secs"]),
             "total_duration_secs": result["total_duration_secs"],
@@ -134,7 +163,9 @@ def main() -> None:
         }
         print(json.dumps(output, indent=2))
     else:
-        # Plain text: just the transcript
+        # Plain text: title header + transcript
+        if title:
+            print(f"# {title}\n")
         for segment in result["segments"]:
             print(segment["text"])
 
