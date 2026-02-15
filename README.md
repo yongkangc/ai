@@ -31,6 +31,7 @@ install.sh           # Install all skills
 
 - **daily-reading-digest** — Daily blog + HN roundup from tracked writers
 - **vicki-newsletter-digest** — Weekly Chamath + Sahil Bloom digest for Vicki's FA brand
+- **youtube-summarizer** — Summarize any YouTube video from its transcript
 
 ## Adding New Skills
 
