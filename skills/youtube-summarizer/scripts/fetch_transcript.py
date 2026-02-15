@@ -23,10 +23,10 @@ def extract_video_id(url: str) -> str | None:
     for pattern in patterns:
         match = re.search(pattern, url)
         if match:
-            return match.group(1)
+            return match.group(1).rstrip("/")
     # Maybe it's just a video ID
-    if re.match(r"^[a-zA-Z0-9_-]{11}$", url):
-        return url
+    if re.match(r"^[a-zA-Z0-9_-]{11}$", url.rstrip("/")):
+        return url.rstrip("/")
     return None
 
 
