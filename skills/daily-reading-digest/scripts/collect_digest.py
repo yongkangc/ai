@@ -50,6 +50,11 @@ SOURCES: list[dict[str, str]] = [
         "name": "Peter Steinberger",
         "feed": "https://steipete.me/rss.xml",
     },
+    {
+        "id": "nvidia",
+        "name": "NVIDIA Blog",
+        "feed": "https://blogs.nvidia.com/feed/",
+    },
 ]
 
 
@@ -427,13 +432,12 @@ def to_markdown(payload: dict[str, Any]) -> str:
         lines.append("- No new posts since the last run.")
     else:
         for post in new_posts:
-            published = parse_datetime(post.get("published_at"))
-            date_label = published.date().isoformat() if published else "unknown-date"
+            title = post.get("title", "(untitled)")
+            url = post.get("url", "")
+            source_name = post.get("source_name", "Unknown")
             lines.append(
-                f"- [{post.get('source_name', 'Unknown')}] {post.get('title', '(untitled)')}"
-                f" ({date_label})"
+                f"- [{source_name}] [{title}]({url})"
             )
-            lines.append(f"  {post.get('url', '')}")
             excerpt = (post.get("excerpt") or "").strip()
             if excerpt:
                 lines.append(f"  {excerpt}")
@@ -442,11 +446,12 @@ def to_markdown(payload: dict[str, Any]) -> str:
     hn_stories: list[dict[str, Any]] = payload.get("hn_top", [])
     lines.append(f"Hacker News top {len(hn_stories)}")
     for story in hn_stories:
+        title = story.get("title", "(untitled)")
+        url = story.get("url", "")
         lines.append(
-            f"{story.get('rank')}. {story.get('title')} "
-            f"({story.get('score')} points, {story.get('comments')} comments)"
+            f"{story.get('rank')}. [{title}]({url}) "
+            f"({story.get('score')} pts, {story.get('comments')} comments)"
         )
-        lines.append(f"   {story.get('url')}")
 
     return "\n".join(lines)
 

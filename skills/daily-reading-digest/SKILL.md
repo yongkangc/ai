@@ -35,9 +35,10 @@ If state is corrupted or stale, remove it and rerun.
 
 1. Run the script and parse JSON.
 2. For each `new_posts[]` item:
-   - Keep the title and URL.
+   - Use inline Markdown links: `[title](url)` so the title IS the link
    - Use the feed excerpt directly if it is clear.
    - If excerpt is weak, fetch the URL and write a better one-line summary.
+   - Example: `- [How to Build X](https://example.com/post) — one-line summary`
 3. Format HN top stories from `hn_top[]` — each entry MUST:
    - Use inline Markdown links: `[title](url)` so the title IS the link
    - Add a short "why it matters" phrase after the link
