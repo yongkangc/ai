@@ -38,27 +38,44 @@ If state is corrupted or stale, remove it and rerun.
    - Use inline Markdown links: `[title](url)` so the title IS the link
    - Use the feed excerpt directly if it is clear.
    - If excerpt is weak, fetch the URL and write a better one-line summary.
-   - Example: `- [How to Build X](https://example.com/post) — one-line summary`
-3. Format HN top stories from `hn_top[]` — each entry MUST:
+   - Example: `- [How to Build X](https://example.com/post) - one-line summary`
+3. Format HN top stories from `hn_top[]` - each entry MUST:
    - Use inline Markdown links: `[title](url)` so the title IS the link
    - Add a short "why it matters" phrase after the link
-   - Example: `1. [Some Cool Project](https://example.com/cool) — why this matters`
+   - Example: `1. [Some Cool Project](https://example.com/cool) - why this matters`
 4. Keep tone factual and compact.
 5. Send one Telegram message only (no markdown tables).
 
 ## Output format
 
-Use this exact high-level structure:
+Use this exact structure. Every title MUST be a clickable inline link — no bare URLs, no titles without links.
 
-- `📚 Daily Readings (YYYY-MM-DD)`
-- `New posts` section
-- `⚡ HN Top 10` section
-- `Today’s pick` (one short sentence)
+```
+📚 Daily Readings — Mon DD
 
-## Length and quality constraints
+✍️ Tracked Writers
 
-- Target 1200-2500 characters total (longer is fine to fit all 10 HN links).
-- **All links must be inline Markdown**: `[title](url)` — never bare URLs on separate lines.
+[Post Title](https://actual-url.com/post) — One-line summary of what the post argues or covers.
+
+No new posts from PG, Vitalik, Dwarkesh, or steipete.
+
+⚡ HN Top 10
+
+1. [Story Title](https://story-url.com) — why it matters (NNN pts)
+2. [Another Story](https://another-url.com) — short description (NNN pts)
+...
+
+🎯 Today's pick: [Pick Title](https://pick-url.com) — one sentence on why it's worth reading.
+```
+
+## CRITICAL formatting rules
+
+- **EVERY title must be an inline Markdown link**: `[title](url)`. This is non-negotiable.
+- **NEVER** output a bare URL on its own line (e.g. `https://example.com`)
+- **NEVER** output a title without its URL embedded in it
+- The URL goes INSIDE the title text: `[My Article](https://url)` not `My Article\nhttps://url`
+- Today's pick line must ALSO have an inline link
+- Target 1500-3000 characters (longer is fine to fit all links)
 - If there are no new tracked posts, explicitly say: `No new posts from tracked writers today.`
 - Never invent article content. If unsure, mark as `title-only summary`.
 
