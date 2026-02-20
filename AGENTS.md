@@ -19,6 +19,7 @@ git pull && ./install.sh  # Update
 |-------|-------------|
 | `daily-reading-digest` | Daily blog roundup from tracked SWE/AI writers + HN top 10 |
 | `vicki-newsletter-digest` | Weekly Chamath + Sahil Bloom digest for Vicki's FA brand (Singapore) |
+| `publish-chart` | Publish HTML chart/visualization to www.ksgabrieltan.com/charts |
 
 ## Adding New Skills
 
